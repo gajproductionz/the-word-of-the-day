@@ -6,8 +6,18 @@ import { useStreak, streakMilestones } from "@/lib/useStreak";
 import ShareBar from "./ShareBar";
 
 interface DevotionalActionsProps {
+  devotionalId: string;
   slug: string;
   title: string;
+}
+
+function trackEvent(type: string, devotionalId: string, metadata?: Record<string, unknown>) {
+  fetch("/api/analytics/event", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type, devotionalId, metadata }),
+    keepalive: true,
+  }).catch(() => {});
 }
 
 const SAVED_KEY = "wordoftheday_saved";
@@ -21,9 +31,14 @@ function readSaved(): string[] {
   }
 }
 
-export default function DevotionalActions({ slug, title }: DevotionalActionsProps) {
+export default function DevotionalActions({ devotionalId, slug, title }: DevotionalActionsProps) {
   const { streak, receivedToday, receiveToday, hydrated } = useStreak();
   const [saved, setSaved] = useState(false);
+
+  function handleReceive() {
+    receiveToday();
+    trackEvent("WORD_RECEIVED", devotionalId);
+  }
 
   useEffect(() => {
     // One-time read of client-only localStorage after mount, to avoid a
@@ -48,7 +63,7 @@ export default function DevotionalActions({ slug, title }: DevotionalActionsProp
       <div className="flex flex-wrap items-center gap-4">
         <button
           type="button"
-          onClick={receiveToday}
+          onClick={handleReceive}
           disabled={receivedToday}
           className={`rounded-full px-6 py-3 font-sans text-xs font-semibold tracking-[0.14em] transition-colors disabled:cursor-default ${
             receivedToday
@@ -94,7 +109,7 @@ export default function DevotionalActions({ slug, title }: DevotionalActionsProp
 
       <div>
         <p className="mb-3 font-sans text-xs font-medium tracking-[0.14em] text-charcoal/60">SHARE THIS WORD</p>
-        <ShareBar title={title} url={`/devotional/${slug}`} />
+        <ShareBar title={title} url={`/devotional/${slug}`} devotionalId={devotionalId} />
       </div>
     </div>
   );

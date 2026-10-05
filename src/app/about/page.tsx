@@ -97,7 +97,7 @@ export default function AboutPage() {
       </section>
 
       <section className="border-t border-charcoal/10 bg-ivory-deep px-5 py-24 sm:px-10">
-        <ReceiveTheWord />
+        <ReceiveTheWord source="about" />
       </section>
     </div>
   );

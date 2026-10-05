@@ -1,63 +1,50 @@
-# Adding a new Word of the Day
+# The content layer
 
-This content layer is intentionally just typed TypeScript objects — no
-database, no CMS — so a non-developer workflow can be bolted on later
-(Sanity, Contentful, a simple admin form writing to a DB, etc.) without
-touching a single page or component. Every page reads through the
-functions in `src/content/index.ts`, never the raw arrays directly.
+Every public page reads devotionals, series, topics, and "I Need a Word"
+categories exclusively through the functions in `src/content/index.ts`
+(`getAllDevotionals`, `getTodaysWord`, `getDevotionalsBySeries`, etc.) —
+never a database client, never a raw array. Those functions are backed
+by Postgres/SQLite via Prisma (see the root `README.md`'s "Database"
+section), which is what makes "publish once, appears everywhere"
+possible: there's exactly one place the public site gets its data from,
+so nothing can go update the homepage but forget the archive.
 
 ## To publish tomorrow's devotional
 
-1. Open `src/content/devotionals.ts`.
-2. Copy an existing entry and add a new object to the top of the `devotionals` array.
-3. Fill in every field (see `src/content/types.ts` for the full shape):
-   - `id` — any unique string (e.g. `"d16"`)
-   - `slug` — URL-safe, kebab-case, unique (becomes `/devotional/your-slug`)
-   - `date` — `"YYYY-MM-DD"`
-   - `title`, `book`, `chapter`, `verseStart`, `verseEnd?`
-   - `scriptureReference` — display form, e.g. `"ROMANS 8:28"`
-   - `scriptureText` — full KJV passage text
-   - `keyMessage` — one sentence, becomes the big pull-quote
-   - `reflection` — an array of paragraph strings
-   - `reflectionQuestion`, `prayer`
-   - `topics` — pick from the `Topic` union in `types.ts`, or extend it
-   - `series?` / `seriesDay?` — only if this is part of a series (must match a slug in `src/content/series.ts`)
-   - `featuredImage` — one of the named atmosphere treatments in
-     `src/components/Atmosphere.tsx` (or a real photo path once photography
-     is added — see below)
-   - `featuredImageAlt` — required, descriptive alt text
-   - `seoTitle`, `seoDescription` — `seoTitle` should **not** include
-     "The Word of the Day"; the root layout's title template appends it
-     automatically, so including it yourself produces a doubled title
-   - `published: true`, `featured?: true` (only one should be `featured` — it becomes "Today's Word" on the homepage)
-4. Save. The devotional is now live on `/devotionals`, search, topic pages,
-   its book page, and (if it has `series`) its series page — no other
-   changes needed.
-5. Run `npm run fetch-images` once. This automatically searches Unsplash
-   for a photo matching the devotional's topic (or its `unsplashQuery`
-   override, if you set one) and caches the result — **no manual image
-   search required**. Devotionals that already have a cached image are
-   skipped, so it's always safe to re-run after adding a new one. Requires
-   `UNSPLASH_ACCESS_KEY` in `.env.local` — see the root `README.md`.
+**Use [Word of the Day Studio](/studio)** — `/studio/new` for a fresh
+Word, or paste an already-written one into its **Import a Word** panel
+and it'll suggest how the text maps onto each field (title, Scripture,
+key message, reflection, question, prayer), all editable before you
+save anything. Autosave keeps a draft as you write; **Publish Now** or
+**Schedule** makes it live. See the root `README.md`'s "Studio" section
+for what every page there does.
 
-If you skip step 5 (or haven't set up an Unsplash key yet), the
-devotional still displays fine — it just uses its `featuredImage`
-Atmosphere treatment instead of a real photo, exactly like before this
-feature existed.
+Publishing a devotional automatically makes it eligible for the
+homepage's Today's Word, the devotional archive, its topic and Bible
+book pages, search, "I Need a Word" (once you link it to a category in
+`/studio/need-a-word`), its series page (if assigned in
+`/studio/series`), and the sitemap — no separate step for any of those.
+
+`prisma/schema.prisma` is the full field reference if you want it beyond
+what the editor's UI surfaces directly (e.g. `unsplashQuery`, to
+override the auto-selected search phrase for a specific Word — editable
+via `npm run db:studio`, Prisma's own data browser).
 
 ## How images are chosen
 
 Each devotional's photo comes from one of three sources, in priority order:
 
 1. **A cached Unsplash photo** (`src/data/unsplash-cache.json`), resolved
-   automatically by `npm run fetch-images` from the devotional's topic —
-   see above. This is the default path and requires no manual work.
+   automatically by `npm run fetch-images` from the devotional's topic.
+   This is the default path and requires no manual work — see the root
+   `README.md`'s "Automatic photography" section for setup.
 2. **`featuredImage`** — a named key (`"sunrise-ridge"`, `"forest-light"`,
-   etc.) rendered by `src/components/Atmosphere.tsx` as an art-directed
-   gradient + grain treatment. Used whenever no Unsplash image is cached
-   for that slug (no key configured, the fetch script hasn't run yet, or
-   the search came up empty) — so every devotional always has a
-   considered visual, Unsplash or not.
+   etc.), set in the editor's "Topics, Series & Image" section, rendered
+   by `src/components/Atmosphere.tsx` as an art-directed gradient + grain
+   treatment. Used whenever no Unsplash image is cached for that slug (no
+   key configured, the fetch script hasn't run yet, or the search came up
+   empty) — so every devotional always has a considered visual, Unsplash
+   or not.
 3. **Your own fine-art photography**, once you have it. Swap in a real
    file instead of relying on either of the above:
    - Drop the image into `/public/images/devotionals/`.
@@ -70,16 +57,27 @@ Each devotional's photo comes from one of three sources, in priority order:
    - No other devotional data needs to change.
 
 To re-pick a devotional's Unsplash photo (e.g. after narrowing its
-`unsplashQuery` to a more precise search phrase), delete its entry from
-`src/data/unsplash-cache.json` and run `npm run fetch-images` again — it
-only resolves entries missing from the cache, so this re-fetches just
-that one devotional. `npm run fetch-images -- --force` instead
-re-resolves *every* devotional, overwriting the whole cache.
+`unsplashQuery` to a more precise search phrase via `npm run db:studio`),
+delete its entry from `src/data/unsplash-cache.json` and run
+`npm run fetch-images` again — it only resolves entries missing from the
+cache, so this re-fetches just that one devotional.
+`npm run fetch-images -- --force` instead re-resolves *every*
+devotional, overwriting the whole cache.
 
-## Swapping this for a real CMS/database later
+## `DevotionalReader.tsx`: one template, not two
 
-Replace the contents of `getAllDevotionals()` and friends in
-`src/content/index.ts` with calls to your CMS/DB client, keeping the same
-return shape (`Devotional[]`). Every page and component already consumes
-data exclusively through those functions, so the rest of the app needs no
-changes.
+Studio's live preview and the real public devotional page
+(`/devotional/[slug]`) both render through the same
+`src/components/DevotionalReader.tsx` component. "What you see in
+preview" and "what readers actually get" can't drift apart because
+they're literally the same code path, fed different data.
+
+## Extending the schema
+
+Add a field in `prisma/schema.prisma`, run `npm run db:migrate` to
+create and apply the migration, then thread it through: the Zod schema
+in `src/lib/validation.ts`, `buildDevotionalData` in
+`src/lib/studio/saveDevotional.ts`, the `Devotional` type in
+`src/content/types.ts` and its mapping in `toDevotional()`
+(`src/content/index.ts`), and wherever in the editor UI
+(`src/components/studio/DevotionalEditor.tsx`) it should be editable.

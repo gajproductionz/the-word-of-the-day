@@ -40,3 +40,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local SQLite database (dev only — never committed; schema.prisma and
+# prisma/migrations/ are the source of truth, each environment runs its
+# own `npm run db:migrate` + `npm run db:seed` to get a local copy)
+/prisma/*.db
+/prisma/*.db-journal

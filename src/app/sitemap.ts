@@ -1,8 +1,14 @@
 import type { MetadataRoute } from "next";
-import { getAllDevotionals, allTopics, bibleBooks, seriesList } from "@/content";
+import { getAllDevotionals, getAllTopics, bibleBooks, getAllSeries } from "@/content";
 import { SITE_URL as siteUrl } from "@/lib/site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const [devotionals, allTopics, seriesList] = await Promise.all([
+    getAllDevotionals(),
+    getAllTopics(),
+    getAllSeries(),
+  ]);
+
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${siteUrl}/`, changeFrequency: "daily", priority: 1 },
     { url: `${siteUrl}/devotionals`, changeFrequency: "daily", priority: 0.9 },
@@ -11,7 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${siteUrl}/about`, changeFrequency: "monthly", priority: 0.5 },
   ];
 
-  const devotionalRoutes: MetadataRoute.Sitemap = getAllDevotionals().map((d) => ({
+  const devotionalRoutes: MetadataRoute.Sitemap = devotionals.map((d) => ({
     url: `${siteUrl}/devotional/${d.slug}`,
     lastModified: d.date,
     changeFrequency: "yearly",

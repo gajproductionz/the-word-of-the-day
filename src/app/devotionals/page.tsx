@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getAllDevotionals, allTopics, bibleBooks } from "@/content";
+import { getAllDevotionals, getAllTopics, bibleBooks } from "@/content";
 import { resolveImages } from "@/lib/resolveImage";
 import DevotionalLibrary from "@/components/DevotionalLibrary";
 import RevealText from "@/components/RevealText";
@@ -11,8 +11,11 @@ export const metadata: Metadata = {
   alternates: { canonical: "/devotionals" },
 };
 
+export const revalidate = 3600;
+
 export default async function DevotionalsPage() {
-  const devotionals = await resolveImages(getAllDevotionals());
+  const [allDevotionals, allTopics] = await Promise.all([getAllDevotionals(), getAllTopics()]);
+  const devotionals = await resolveImages(allDevotionals);
 
   return (
     <div className="px-5 py-20 sm:px-10 sm:py-28">

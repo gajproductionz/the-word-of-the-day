@@ -1,0 +1,324 @@
+// The Word of the Day — Studio data layer.
+//
+// Local development uses SQLite (zero external setup). SQLite's file
+// storage does not reliably persist on Vercel's serverless functions, so
+// before relying on this in production, swap `provider` below to
+// "postgresql", point DATABASE_URL at a hosted Postgres (Neon / Vercel
+// Postgres), and run `prisma migrate dev` once against it. The schema
+// itself uses only cross-provider-portable types for exactly this reason.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------
+// Admin
+// ---------------------------------------------------------------------
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  devotionals Devotional[]
+}
+
+// ---------------------------------------------------------------------
+// Content
+// ---------------------------------------------------------------------
+
+enum DevotionalStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+model Devotional {
+  id       String  @id @default(cuid())
+  slug     String  @unique
+  // The date this Word is "for" — distinct from publishAt (when it
+  // actually goes live, which may be earlier the same morning).
+  date     DateTime
+  title    String
+
+  book        String
+  chapter     Int
+  verseStart  Int
+  verseEnd    Int?
+
+  scriptureReference String
+  scriptureText      String
+  keyMessage         String
+  // Array of paragraph strings.
+  reflection         Json
+  reflectionQuestion String
+  prayer             String
+
+  topics Topic[]
+
+  series    Series? @relation(fields: [seriesId], references: [id])
+  seriesId  String?
+  seriesDay Int?
+
+  featuredImage    String
+  featuredImageAlt String
+  unsplashQuery    String?
+
+  seoTitle       String
+  seoDescription String
+
+  status    DevotionalStatus @default(DRAFT)
+  // When this Word should (or did) go live. Null for drafts.
+  publishAt DateTime?
+  // Exactly one Devotional should be `featured` at a time — see
+  // src/content/index.ts getTodaysWord(). Enforced at the application
+  // layer (set-and-unset in a transaction), not the schema.
+  featured  Boolean          @default(false)
+
+  audioUrl      String?
+  audioDuration Int?
+
+  // --- Distribution ---
+  emailEnabled  Boolean   @default(true)
+  pushEnabled   Boolean   @default(true)
+  socialEnabled Boolean   @default(false)
+  emailSendAt   DateTime?
+  pushSendAt    DateTime?
+
+  socialCaptionInstagram String?
+  socialCaptionFacebook  String?
+  socialCaptionStory     String?
+  socialCaptionShort     String?
+
+  createdBy   AdminUser? @relation(fields: [createdById], references: [id])
+  createdById String?
+
+  needCategories   NeedCategoryDevotional[]
+  notifications    NotificationLog[]
+  analyticsEvents  AnalyticsEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, date])
+  @@index([publishAt])
+}
+
+model Topic {
+  id   String @id @default(cuid())
+  name String @unique
+  slug String @unique
+
+  devotionals Devotional[]
+}
+
+model Series {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String
+  coverImage  String?
+  totalDays   Int
+  status      DevotionalStatus @default(DRAFT)
+
+  devotionals Devotional[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------
+// "I Need a Word"
+// ---------------------------------------------------------------------
+
+model NeedCategory {
+  id                 String @id @default(cuid())
+  slug               String @unique
+  label              String
+  scriptureReference String
+  scriptureText      String
+  encouragement      String
+
+  devotionals NeedCategoryDevotional[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Explicit join model (rather than an implicit m2m) so recommendation
+// rotation can later weight or prioritize specific pairings.
+model NeedCategoryDevotional {
+  id             String       @id @default(cuid())
+  needCategory   NeedCategory @relation(fields: [needCategoryId], references: [id], onDelete: Cascade)
+  needCategoryId String
+  devotional     Devotional   @relation(fields: [devotionalId], references: [id], onDelete: Cascade)
+  devotionalId   String
+  createdAt      DateTime     @default(now())
+
+  @@unique([needCategoryId, devotionalId])
+}
+
+// ---------------------------------------------------------------------
+// Prayer
+// ---------------------------------------------------------------------
+
+enum PrayerStatus {
+  NEW
+  PRAYED_FOR
+  APPROVED_FOR_WALL
+  PRIVATE
+  ARCHIVED
+}
+
+model PrayerRequest {
+  id           String       @id @default(cuid())
+  name         String
+  request      String
+  // The requester's own consent choices at submission time.
+  isPrivate    Boolean
+  shareOnWall  Boolean
+  // Admin workflow state. Must never be APPROVED_FOR_WALL when
+  // isPrivate is true — enforced in the Studio API, not just the UI.
+  status       PrayerStatus @default(NEW)
+  prayerCount  Int          @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------
+// Subscribers & distribution
+// ---------------------------------------------------------------------
+
+enum EmailStatus {
+  SUBSCRIBED
+  UNSUBSCRIBED
+}
+
+model Subscriber {
+  id                String      @id @default(cuid())
+  email             String      @unique
+  emailStatus       EmailStatus @default(SUBSCRIBED)
+  timezone          String?
+  source            String
+  consentTimestamp  DateTime
+  lastNotifiedAt    DateTime?
+  unsubscribedAt    DateTime?
+  unsubscribeToken  String      @unique @default(cuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([emailStatus])
+}
+
+model PushSubscription {
+  id        String    @id @default(cuid())
+  endpoint  String    @unique
+  p256dh    String
+  auth      String
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+}
+
+enum NotificationChannel {
+  EMAIL
+  PUSH
+  SOCIAL
+  SMS
+}
+
+enum NotificationStatus {
+  NOT_SCHEDULED
+  SCHEDULED
+  SENDING
+  SENT
+  PARTIALLY_FAILED
+  FAILED
+}
+
+model NotificationLog {
+  id           String              @id @default(cuid())
+  devotional   Devotional          @relation(fields: [devotionalId], references: [id], onDelete: Cascade)
+  devotionalId String
+  channel      NotificationChannel
+  status       NotificationStatus  @default(NOT_SCHEDULED)
+  scheduledAt  DateTime?
+  sentAt       DateTime?
+  recipientCount Int?
+  failureCount   Int?
+  errorMessage   String?
+  // devotionalId + channel, enforced unique so a retry can never
+  // double-send a channel that already succeeded for this Word.
+  idempotencyKey String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+// ---------------------------------------------------------------------
+// Analytics
+// ---------------------------------------------------------------------
+
+enum AnalyticsEventType {
+  PAGE_VIEW
+  WORD_RECEIVED
+  PRAYER_SUBMITTED
+  PRAYER_PRAYED
+  SHARE
+  SEARCH
+  NEED_A_WORD_SELECTED
+  EMAIL_CLICK
+}
+
+model AnalyticsEvent {
+  id           String             @id @default(cuid())
+  type         AnalyticsEventType
+  devotional   Devotional?        @relation(fields: [devotionalId], references: [id])
+  devotionalId String?
+  // Anonymous per-browser id (cookie), not tied to identity.
+  sessionId    String
+  // e.g. { "searchTerm": "waiting" } or { "need": "anxious" } or { "shareChannel": "facebook" }
+  metadata     Json?
+  createdAt    DateTime           @default(now())
+
+  @@index([type, createdAt])
+  @@index([devotionalId])
+}
+
+// ---------------------------------------------------------------------
+// Settings (singleton row, id always "default")
+// ---------------------------------------------------------------------
+
+model Settings {
+  id                      String   @id @default("default")
+  defaultTimezone         String   @default("America/New_York")
+  defaultEmailDelayMinutes Int     @default(30)
+  emailProvider           String   @default("console")
+  pushVapidPublicKey      String?
+  pushVapidPrivateKey     String?
+  updatedAt               DateTime @updatedAt
+}
+
+// Fixed-window rate limiting for public forms (prayer submission, email
+// signup). DB-backed rather than in-memory because serverless instances
+// don't share memory — see src/lib/rateLimit.ts. id is `${routeKey}:${ip}`.
+model RateLimitBucket {
+  id          String   @id
+  count       Int      @default(0)
+  windowStart DateTime
+  updatedAt   DateTime @updatedAt
+}

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { allTopics, getAllDevotionals, bibleBooks } from "@/content";
+import { getAllTopics, getAllDevotionals, bibleBooks } from "@/content";
 import { resolveImages } from "@/lib/resolveImage";
 import DevotionalLibrary from "@/components/DevotionalLibrary";
 import RevealText from "@/components/RevealText";
@@ -12,6 +12,8 @@ interface PageProps {
 function findBook(slug: string) {
   return bibleBooks.find((b) => b.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase());
 }
+
+export const revalidate = 3600;
 
 export async function generateStaticParams() {
   return bibleBooks.map((b) => ({ book: b.toLowerCase().replace(/\s+/g, "-") }));
@@ -33,7 +35,7 @@ export default async function BookPage({ params }: PageProps) {
   const book = findBook(bookSlug);
   if (!book) notFound();
 
-  const allDevotionals = getAllDevotionals();
+  const [allDevotionals, allTopics] = await Promise.all([getAllDevotionals(), getAllTopics()]);
   const hasContent = allDevotionals.some((d) => d.book === book);
   const devotionals = hasContent ? await resolveImages(allDevotionals) : [];
 

@@ -6,9 +6,21 @@ import { SITE_URL } from "@/lib/site";
 interface ShareBarProps {
   title: string;
   url: string;
+  /** When provided, each share action logs a SHARE analytics event. */
+  devotionalId?: string;
 }
 
-export default function ShareBar({ title, url }: ShareBarProps) {
+function trackShare(devotionalId: string | undefined, channel: string) {
+  if (!devotionalId) return;
+  fetch("/api/analytics/event", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type: "SHARE", devotionalId, metadata: { channel } }),
+    keepalive: true,
+  }).catch(() => {});
+}
+
+export default function ShareBar({ title, url, devotionalId }: ShareBarProps) {
   const [copied, setCopied] = useState(false);
 
   // Built from a fixed site constant (not window.location) so the server
@@ -19,6 +31,7 @@ export default function ShareBar({ title, url }: ShareBarProps) {
     try {
       await navigator.clipboard.writeText(fullUrl);
       setCopied(true);
+      trackShare(devotionalId, "copy_link");
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // clipboard unavailable — no-op
@@ -29,6 +42,7 @@ export default function ShareBar({ title, url }: ShareBarProps) {
     if (navigator.share) {
       try {
         await navigator.share({ title, url: fullUrl });
+        trackShare(devotionalId, "native");
       } catch {
         // user cancelled share — no-op
       }
@@ -59,6 +73,7 @@ export default function ShareBar({ title, url }: ShareBarProps) {
           href={l.href}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackShare(devotionalId, l.label.toLowerCase())}
           className="rounded-full border border-charcoal/20 px-4 py-2 font-sans text-xs font-medium tracking-wide text-charcoal transition-colors hover:border-forest hover:text-forest"
         >
           {l.label.toUpperCase()}

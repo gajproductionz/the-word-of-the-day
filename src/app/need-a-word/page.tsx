@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { emotionWords } from "@/content";
+import { getEmotionWords } from "@/content";
 import NeedAWordExperience from "@/components/NeedAWordExperience";
 import RevealText from "@/components/RevealText";
 
@@ -10,7 +10,13 @@ export const metadata: Metadata = {
   alternates: { canonical: "/need-a-word" },
 };
 
-export default function NeedAWordPage() {
+// Recommendations rotate at random on every load (see getEmotionWords) —
+// so this page is intentionally never cached/pre-rendered.
+export const dynamic = "force-dynamic";
+
+export default async function NeedAWordPage() {
+  const emotions = await getEmotionWords();
+
   return (
     <div className="px-5 py-20 sm:px-10 sm:py-28">
       <div className="mx-auto max-w-4xl">
@@ -24,7 +30,7 @@ export default function NeedAWordPage() {
         </p>
 
         <div className="mt-16">
-          <NeedAWordExperience emotions={emotionWords} />
+          <NeedAWordExperience emotions={emotions} />
         </div>
       </div>
     </div>

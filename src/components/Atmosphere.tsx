@@ -17,6 +17,20 @@ export type AtmosphereTreatment =
   | "desert-road"
   | "forest-light";
 
+/** Runtime list of the same keys, for building a <select> in the Studio editor. */
+export const atmosphereTreatments: AtmosphereTreatment[] = [
+  "sunrise-ridge",
+  "mountain-mist",
+  "wheat-field",
+  "window-light",
+  "harbor-dawn",
+  "candle-glow",
+  "storm-light",
+  "ocean-horizon",
+  "desert-road",
+  "forest-light",
+];
+
 const treatments: Record<AtmosphereTreatment, string> = {
   "sunrise-ridge":
     "radial-gradient(130% 90% at 50% 110%, rgba(184,146,75,0.55) 0%, rgba(184,146,75,0.08) 38%, transparent 60%), linear-gradient(180deg, #221c13 0%, #3a2e1d 38%, #7a5a33 68%, #c99a5b 100%)",

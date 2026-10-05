@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { readPrayers, writePrayers, getWallPrayers } from "@/lib/prayerStore";
+import { getWallPrayers, createPrayerRequest } from "@/lib/prayerStore";
+import { prayerSubmissionSchema } from "@/lib/validation";
+import { checkRateLimit, getClientIp } from "@/lib/rateLimit";
+import { logAnalyticsEvent } from "@/lib/analytics";
 
 export async function GET() {
   const wall = await getWallPrayers();
@@ -7,42 +10,28 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
-  let body: {
-    name?: string;
-    request?: string;
-    isPrivate?: boolean;
-    shareOnWall?: boolean;
-  };
+  const ip = getClientIp(request);
+  const rateLimit = await checkRateLimit({ routeKey: "prayer-submit", ip, limit: 5, windowSeconds: 3600 });
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { error: "You've submitted a few requests already — please try again in a bit." },
+      { status: 429 }
+    );
+  }
+
+  let body: unknown;
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
 
-  const requestText = body.request?.trim();
-  if (!requestText) {
-    return NextResponse.json({ error: "Please share your prayer request." }, { status: 400 });
-  }
-  if (requestText.length > 1000) {
-    return NextResponse.json({ error: "Please keep your request under 1000 characters." }, { status: 400 });
+  const parsed = prayerSubmissionSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid request." }, { status: 400 });
   }
 
-  const name = body.name?.trim() || "Anonymous";
-  const isPrivate = Boolean(body.isPrivate);
-  const shareOnWall = isPrivate ? false : Boolean(body.shareOnWall);
-
-  const prayers = await readPrayers();
-  const newPrayer = {
-    id: `p${Date.now()}`,
-    name,
-    request: requestText,
-    isPrivate,
-    shareOnWall,
-    prayerCount: 0,
-    createdAt: new Date().toISOString(),
-  };
-  prayers.unshift(newPrayer);
-  await writePrayers(prayers);
-
-  return NextResponse.json({ success: true, prayer: newPrayer });
+  const prayer = await createPrayerRequest(parsed.data);
+  await logAnalyticsEvent({ type: "PRAYER_SUBMITTED", sessionId: ip });
+  return NextResponse.json({ success: true, prayer });
 }

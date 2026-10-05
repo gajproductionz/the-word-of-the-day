@@ -6,7 +6,7 @@ export const contentType = "image/png";
 
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const d = getDevotionalBySlug(slug);
+  const d = await getDevotionalBySlug(slug);
 
   const title = d?.title ?? "The Word of the Day";
   const reference = d?.scriptureReference ?? "";

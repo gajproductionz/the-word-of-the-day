@@ -15,14 +15,15 @@ import SeasonPick from "@/components/home/SeasonPick";
 import SeriesFeature from "@/components/home/SeriesFeature";
 import PrayerInvite from "@/components/home/PrayerInvite";
 import ReceiveTheWord from "@/components/ReceiveTheWord";
+import PushOptIn from "@/components/PushOptIn";
 import ClosingScripture from "@/components/home/ClosingScripture";
 
 export default async function HomePage() {
-  const todaysWord = getTodaysWord();
-  const recent = getRecentDevotionals(todaysWord.slug, 3);
-  const seasonPick = getSeasonPick();
-  const featuredSeries = getFeaturedSeries();
-  const seriesDays = featuredSeries ? getDevotionalsBySeries(featuredSeries.slug) : [];
+  const todaysWord = await getTodaysWord();
+  const recent = await getRecentDevotionals(todaysWord.slug, 3);
+  const seasonPick = await getSeasonPick();
+  const featuredSeries = await getFeaturedSeries();
+  const seriesDays = featuredSeries ? await getDevotionalsBySeries(featuredSeries.slug) : [];
 
   const [todaysWordWithImage, recentWithImages, seasonPickWithImage] = await Promise.all([
     resolveImage(todaysWord),
@@ -43,6 +44,9 @@ export default async function HomePage() {
       <PrayerInvite />
       <section className="bg-ivory px-5 py-24 sm:px-10 sm:py-28">
         <ReceiveTheWord />
+        <div className="mx-auto mt-16 max-w-md border-t border-charcoal/10 pt-12">
+          <PushOptIn />
+        </div>
       </section>
       <ClosingScripture />
     </>

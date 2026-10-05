@@ -1,103 +1,242 @@
-import { devotionals } from "./devotionals";
-import { seriesList } from "./series";
-import { emotionWords } from "./emotions";
-import type { Devotional, Topic } from "./types";
+import { db } from "@/lib/db";
+import type { Devotional, EmotionWord, SeriesMeta, Topic } from "./types";
+import type {
+  Devotional as PrismaDevotional,
+  Topic as PrismaTopic,
+  Series as PrismaSeries,
+} from "@prisma/client";
 
 export * from "./types";
-export { seriesList } from "./series";
-export { emotionWords } from "./emotions";
 export { bibleBooks } from "./books";
 
-/** All known topics, derived from content so the list never drifts out of sync. */
-export const allTopics: Topic[] = Array.from(
-  new Set(devotionals.flatMap((d) => d.topics))
-).sort() as Topic[];
-
-function byDateDesc(a: Devotional, b: Devotional) {
-  return new Date(b.date).getTime() - new Date(a.date).getTime();
-}
-
-export function getAllDevotionals(): Devotional[] {
-  return devotionals.filter((d) => d.published).sort(byDateDesc);
-}
-
-export function getDevotionalBySlug(slug: string): Devotional | undefined {
-  return devotionals.find((d) => d.slug === slug && d.published);
-}
-
-export function getTodaysWord(): Devotional {
-  const published = getAllDevotionals();
-  return published.find((d) => d.featured) ?? published[0];
-}
-
-export function getRecentDevotionals(excludeSlug?: string, limit = 3): Devotional[] {
-  return getAllDevotionals()
-    .filter((d) => d.slug !== excludeSlug)
-    .slice(0, limit);
-}
-
-export function getDevotionalsByTopic(topic: string): Devotional[] {
-  const normalized = topic.toLowerCase();
-  return getAllDevotionals().filter((d) =>
-    d.topics.some((t) => t.toLowerCase() === normalized)
-  );
-}
-
-export function getDevotionalsByBook(book: string): Devotional[] {
-  const normalized = book.toLowerCase();
-  return getAllDevotionals().filter((d) => d.book.toLowerCase() === normalized);
-}
-
-export function getDevotionalsBySeries(seriesSlug: string): Devotional[] {
-  return getAllDevotionals()
-    .filter((d) => d.series === seriesSlug)
-    .sort((a, b) => (a.seriesDay ?? 0) - (b.seriesDay ?? 0));
-}
-
-export function getSeriesMeta(slug: string) {
-  return seriesList.find((s) => s.slug === slug);
-}
-
-export function getFeaturedSeries() {
-  // The first series that has at least one published devotional.
-  return seriesList.find((s) => getDevotionalsBySeries(s.slug).length > 0);
-}
-
-export function getSeasonPick(): Devotional {
-  const published = getAllDevotionals();
-  return published.find((d) => d.slug === "the-waiting-is-not-wasted") ?? published[1] ?? published[0];
-}
-
-export function getEmotionBySlug(slug: string) {
-  return emotionWords.find((e) => e.slug === slug);
-}
-
-export function getRelatedDevotional(topics: Topic[], excludeSlug: string): Devotional | undefined {
-  const pool = getAllDevotionals().filter(
-    (d) => d.slug !== excludeSlug && d.topics.some((t) => topics.includes(t))
-  );
-  return pool[0] ?? getAllDevotionals().find((d) => d.slug !== excludeSlug);
-}
+type DevotionalRow = PrismaDevotional & { topics: PrismaTopic[]; series: PrismaSeries | null };
 
 /**
- * Lightweight search across title, scripture reference/text, topics, book,
- * and key message. Good enough for a content base of this size; swap for
- * a proper search index (Algolia, Meilisearch, etc.) as the library grows.
+ * Maps a database row onto the same `Devotional` shape every page and
+ * component already consumes, so the DB migration required no changes
+ * to the public site's pages — see src/content/README.md.
  */
-export function searchDevotionals(query: string): Devotional[] {
-  const q = query.trim().toLowerCase();
-  if (!q) return [];
-  return getAllDevotionals().filter((d) => {
-    const haystack = [
-      d.title,
-      d.scriptureReference,
-      d.scriptureText,
-      d.keyMessage,
-      d.book,
-      ...d.topics,
-    ]
-      .join(" ")
-      .toLowerCase();
-    return haystack.includes(q);
+function toDevotional(row: DevotionalRow): Devotional {
+  return {
+    id: row.id,
+    slug: row.slug,
+    date: row.date.toISOString().slice(0, 10),
+    title: row.title,
+    book: row.book,
+    chapter: row.chapter,
+    verseStart: row.verseStart,
+    verseEnd: row.verseEnd ?? undefined,
+    scriptureReference: row.scriptureReference,
+    scriptureText: row.scriptureText,
+    keyMessage: row.keyMessage,
+    reflection: row.reflection as string[],
+    reflectionQuestion: row.reflectionQuestion,
+    prayer: row.prayer,
+    topics: row.topics.map((t) => t.name) as Topic[],
+    series: row.series?.slug,
+    seriesDay: row.seriesDay ?? undefined,
+    featuredImage: row.featuredImage,
+    featuredImageAlt: row.featuredImageAlt,
+    unsplashQuery: row.unsplashQuery ?? undefined,
+    seoTitle: row.seoTitle,
+    seoDescription: row.seoDescription,
+    published: row.status === "PUBLISHED",
+    featured: row.featured,
+  };
+}
+
+const include = { topics: true, series: true } as const;
+
+/** Devotionals that are currently live on the public site (status PUBLISHED, date order). */
+export async function getAllDevotionals(): Promise<Devotional[]> {
+  const rows = await db.devotional.findMany({
+    where: { status: "PUBLISHED" },
+    include,
+    orderBy: { date: "desc" },
   });
+  return rows.map(toDevotional);
+}
+
+export async function getDevotionalBySlug(slug: string): Promise<Devotional | undefined> {
+  const row = await db.devotional.findFirst({
+    where: { slug, status: "PUBLISHED" },
+    include,
+  });
+  return row ? toDevotional(row) : undefined;
+}
+
+export async function getTodaysWord(): Promise<Devotional> {
+  const featured = await db.devotional.findFirst({
+    where: { status: "PUBLISHED", featured: true },
+    include,
+    orderBy: { date: "desc" },
+  });
+  if (featured) return toDevotional(featured);
+
+  const mostRecent = await db.devotional.findFirstOrThrow({
+    where: { status: "PUBLISHED" },
+    include,
+    orderBy: { date: "desc" },
+  });
+  return toDevotional(mostRecent);
+}
+
+export async function getRecentDevotionals(excludeSlug?: string, limit = 3): Promise<Devotional[]> {
+  const rows = await db.devotional.findMany({
+    where: { status: "PUBLISHED", ...(excludeSlug ? { slug: { not: excludeSlug } } : {}) },
+    include,
+    orderBy: { date: "desc" },
+    take: limit,
+  });
+  return rows.map(toDevotional);
+}
+
+export async function getDevotionalsByTopic(topic: string): Promise<Devotional[]> {
+  const rows = await db.devotional.findMany({
+    where: {
+      status: "PUBLISHED",
+      topics: { some: { name: { equals: topic } } },
+    },
+    include,
+    orderBy: { date: "desc" },
+  });
+  return rows.map(toDevotional);
+}
+
+export async function getDevotionalsByBook(book: string): Promise<Devotional[]> {
+  const rows = await db.devotional.findMany({
+    where: { status: "PUBLISHED", book: { equals: book } },
+    include,
+    orderBy: { date: "desc" },
+  });
+  return rows.map(toDevotional);
+}
+
+export async function getDevotionalsBySeries(seriesSlug: string): Promise<Devotional[]> {
+  const rows = await db.devotional.findMany({
+    where: { status: "PUBLISHED", series: { slug: seriesSlug } },
+    include,
+    orderBy: { seriesDay: "asc" },
+  });
+  return rows.map(toDevotional);
+}
+
+export async function getSeriesMeta(slug: string): Promise<SeriesMeta | undefined> {
+  const row = await db.series.findUnique({ where: { slug } });
+  if (!row) return undefined;
+  return { slug: row.slug, title: row.title, description: row.description, totalDays: row.totalDays };
+}
+
+export async function getAllSeries(): Promise<SeriesMeta[]> {
+  const rows = await db.series.findMany({ where: { status: "PUBLISHED" }, orderBy: { createdAt: "asc" } });
+  return rows.map((row) => ({
+    slug: row.slug,
+    title: row.title,
+    description: row.description,
+    totalDays: row.totalDays,
+  }));
+}
+
+export async function getFeaturedSeries(): Promise<SeriesMeta | undefined> {
+  const series = await getAllSeries();
+  for (const s of series) {
+    const days = await getDevotionalsBySeries(s.slug);
+    if (days.length > 0) return s;
+  }
+  return undefined;
+}
+
+export async function getSeasonPick(): Promise<Devotional> {
+  const preferred = await getDevotionalBySlug("the-waiting-is-not-wasted");
+  if (preferred) return preferred;
+  const recent = await getAllDevotionals();
+  return recent[1] ?? recent[0];
+}
+
+export async function getEmotionBySlug(slug: string): Promise<EmotionWord | undefined> {
+  const row = await db.needCategory.findUnique({ where: { slug } });
+  if (!row) return undefined;
+  const link = await db.needCategoryDevotional.findFirst({
+    where: { needCategoryId: row.id },
+    include: { devotional: true },
+  });
+  return {
+    slug: row.slug,
+    label: row.label,
+    scriptureReference: row.scriptureReference,
+    scriptureText: row.scriptureText,
+    encouragement: row.encouragement,
+    devotionalSlug: link?.devotional.slug ?? "",
+  };
+}
+
+/** All "I Need a Word" categories, each paired with one rotated-at-random linked devotional. */
+export async function getEmotionWords(): Promise<EmotionWord[]> {
+  const categories = await db.needCategory.findMany({
+    include: { devotionals: { include: { devotional: true } } },
+    orderBy: { createdAt: "asc" },
+  });
+
+  return categories.map((cat) => {
+    const options = cat.devotionals.filter((link) => link.devotional.status === "PUBLISHED");
+    const chosen = options[Math.floor(Math.random() * options.length)]?.devotional;
+    return {
+      slug: cat.slug,
+      label: cat.label,
+      scriptureReference: cat.scriptureReference,
+      scriptureText: cat.scriptureText,
+      encouragement: cat.encouragement,
+      devotionalSlug: chosen?.slug ?? "",
+    };
+  });
+}
+
+export async function getRelatedDevotional(
+  topics: Topic[],
+  excludeSlug: string
+): Promise<Devotional | undefined> {
+  const rows = await db.devotional.findMany({
+    where: {
+      status: "PUBLISHED",
+      slug: { not: excludeSlug },
+      topics: { some: { name: { in: topics } } },
+    },
+    include,
+    orderBy: { date: "desc" },
+    take: 1,
+  });
+  if (rows[0]) return toDevotional(rows[0]);
+
+  const fallback = await db.devotional.findFirst({
+    where: { status: "PUBLISHED", slug: { not: excludeSlug } },
+    include,
+    orderBy: { date: "desc" },
+  });
+  return fallback ? toDevotional(fallback) : undefined;
+}
+
+export async function searchDevotionals(query: string): Promise<Devotional[]> {
+  const q = query.trim();
+  if (!q) return [];
+  const rows = await db.devotional.findMany({
+    where: {
+      status: "PUBLISHED",
+      OR: [
+        { title: { contains: q } },
+        { scriptureReference: { contains: q } },
+        { scriptureText: { contains: q } },
+        { keyMessage: { contains: q } },
+        { book: { contains: q } },
+        { topics: { some: { name: { contains: q } } } },
+      ],
+    },
+    include,
+    orderBy: { date: "desc" },
+  });
+  return rows.map(toDevotional);
+}
+
+export async function getAllTopics(): Promise<Topic[]> {
+  const rows = await db.topic.findMany({ orderBy: { name: "asc" } });
+  return rows.map((t) => t.name) as Topic[];
 }

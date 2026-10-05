@@ -16,6 +16,15 @@ export default function NeedAWordExperience({ emotions }: NeedAWordExperiencePro
   function pick(e: EmotionWord) {
     setSelected(e);
     setExcluded([e.slug]);
+    fetch("/api/analytics/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "NEED_A_WORD_SELECTED",
+        metadata: { need: e.slug, devotionalSlug: e.devotionalSlug },
+      }),
+      keepalive: true,
+    }).catch(() => {});
   }
 
   function another() {

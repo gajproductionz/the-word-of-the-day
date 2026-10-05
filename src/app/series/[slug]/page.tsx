@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { seriesList, getDevotionalsBySeries, getSeriesMeta } from "@/content";
+import { getAllSeries, getDevotionalsBySeries, getSeriesMeta } from "@/content";
 import { resolveImages } from "@/lib/resolveImage";
 import DevotionalImage from "@/components/DevotionalImage";
 import Reveal from "@/components/Reveal";
@@ -11,13 +11,16 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
-  return seriesList.map((s) => ({ slug: s.slug }));
+  const series = await getAllSeries();
+  return series.map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const series = getSeriesMeta(slug);
+  const series = await getSeriesMeta(slug);
   if (!series) return {};
   return {
     title: series.title,
@@ -28,10 +31,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function SeriesPage({ params }: PageProps) {
   const { slug } = await params;
-  const series = getSeriesMeta(slug);
+  const series = await getSeriesMeta(slug);
   if (!series) notFound();
 
-  const days = await resolveImages(getDevotionalsBySeries(slug));
+  const seriesDevotionals = await getDevotionalsBySeries(slug);
+  const days = await resolveImages(seriesDevotionals);
 
   return (
     <div>

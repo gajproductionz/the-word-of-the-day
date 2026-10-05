@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { allTopics, getAllDevotionals, bibleBooks } from "@/content";
+import { getAllTopics, getAllDevotionals, bibleBooks } from "@/content";
 import { resolveImages } from "@/lib/resolveImage";
 import DevotionalLibrary from "@/components/DevotionalLibrary";
 import RevealText from "@/components/RevealText";
@@ -9,17 +9,21 @@ interface PageProps {
   params: Promise<{ topic: string }>;
 }
 
-function findTopic(slug: string) {
-  return allTopics.find((t) => t.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase());
+async function findTopic(slug: string) {
+  const topics = await getAllTopics();
+  return topics.find((t) => t.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase());
 }
 
+export const revalidate = 3600;
+
 export async function generateStaticParams() {
-  return allTopics.map((t) => ({ topic: t.toLowerCase().replace(/\s+/g, "-") }));
+  const topics = await getAllTopics();
+  return topics.map((t) => ({ topic: t.toLowerCase().replace(/\s+/g, "-") }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { topic: topicSlug } = await params;
-  const topic = findTopic(topicSlug);
+  const topic = await findTopic(topicSlug);
   if (!topic) return {};
   return {
     title: `${topic} Devotionals — Scripture & Reflection`,
@@ -30,10 +34,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function TopicPage({ params }: PageProps) {
   const { topic: topicSlug } = await params;
-  const topic = findTopic(topicSlug);
+  const topic = await findTopic(topicSlug);
   if (!topic) notFound();
 
-  const devotionals = await resolveImages(getAllDevotionals());
+  const [allDevotionals, allTopics] = await Promise.all([getAllDevotionals(), getAllTopics()]);
+  const devotionals = await resolveImages(allDevotionals);
 
   return (
     <div className="px-5 py-20 sm:px-10 sm:py-28">

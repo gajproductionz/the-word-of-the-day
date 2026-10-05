@@ -1,27 +1,60 @@
-import { promises as fs } from "fs";
-import path from "path";
+import { db } from "@/lib/db";
 import type { PrayerRequest } from "@/content/types";
+import type { PrayerRequest as PrismaPrayerRequest } from "@prisma/client";
+
+function toPrayerRequest(row: PrismaPrayerRequest): PrayerRequest {
+  return {
+    id: row.id,
+    name: row.name,
+    request: row.request,
+    isPrivate: row.isPrivate,
+    shareOnWall: row.shareOnWall,
+    prayerCount: row.prayerCount,
+    createdAt: row.createdAt.toISOString(),
+  };
+}
 
 /**
- * Prototype persistence for the Prayer Wall: a JSON file on disk.
- * Fine for a single-instance demo; swap these three functions for real
- * database calls (Postgres, etc.) when deploying for real — nothing
- * above this file needs to change.
+ * Only requests an admin has explicitly approved appear on the public
+ * wall — a new submission with `shareOnWall: true` starts as `NEW` and
+ * is invisible until someone in Studio moves it to APPROVED_FOR_WALL.
+ * See /studio/prayers.
  */
-const DATA_PATH = path.join(process.cwd(), "src/data/prayers.json");
-
-export async function readPrayers(): Promise<PrayerRequest[]> {
-  const raw = await fs.readFile(DATA_PATH, "utf-8");
-  return JSON.parse(raw) as PrayerRequest[];
-}
-
-export async function writePrayers(prayers: PrayerRequest[]): Promise<void> {
-  await fs.writeFile(DATA_PATH, JSON.stringify(prayers, null, 2), "utf-8");
-}
-
 export async function getWallPrayers(): Promise<PrayerRequest[]> {
-  const all = await readPrayers();
-  return all
-    .filter((p) => p.shareOnWall && !p.isPrivate)
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const rows = await db.prayerRequest.findMany({
+    where: { status: "APPROVED_FOR_WALL" },
+    orderBy: { createdAt: "desc" },
+  });
+  return rows.map(toPrayerRequest);
+}
+
+export async function createPrayerRequest(input: {
+  name: string;
+  request: string;
+  isPrivate: boolean;
+  shareOnWall: boolean;
+}): Promise<PrayerRequest> {
+  const row = await db.prayerRequest.create({
+    data: {
+      name: input.name || "Anonymous",
+      request: input.request,
+      isPrivate: input.isPrivate,
+      // Never auto-publish — see getWallPrayers above.
+      shareOnWall: input.isPrivate ? false : input.shareOnWall,
+      status: input.isPrivate ? "PRIVATE" : "NEW",
+    },
+  });
+  return toPrayerRequest(row);
+}
+
+export async function incrementPrayerCount(id: string): Promise<number | null> {
+  try {
+    const row = await db.prayerRequest.update({
+      where: { id },
+      data: { prayerCount: { increment: 1 } },
+    });
+    return row.prayerCount;
+  } catch {
+    return null;
+  }
 }
