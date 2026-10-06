@@ -26,10 +26,13 @@ export default async function DistributionPage() {
     <div className="max-w-4xl">
       <h1 className="font-serif text-3xl text-charcoal">Distribution</h1>
       <p className="mt-2 max-w-xl font-sans text-sm text-charcoal/60">
-        Every channel is queued independently when a Word publishes — a failure in one never blocks the
-        others, and a devotional is never duplicate-sent on retry. Actual delivery currently runs through
-        the console provider (see <code className="rounded bg-charcoal/5 px-1">src/lib/email/providers</code>) —
-        connect a real provider there when ready.
+        Every channel is queued independently when a Word publishes, and a Vercel Cron job (see{" "}
+        <code className="rounded bg-charcoal/5 px-1">vercel.json</code>) actually sends what&apos;s due —
+        a failure in one channel never blocks the others, and a devotional is never duplicate-sent on
+        retry. Email currently runs through the console provider (see{" "}
+        <code className="rounded bg-charcoal/5 px-1">src/lib/email/providers</code>) — connect a real one
+        there when you&apos;re ready for it to actually reach inboxes. Push sends for real already. Social
+        is never sent automatically — its captions are for you to copy and post by hand.
       </p>
 
       <div className="mt-8 divide-y divide-charcoal/10 border-t border-charcoal/10">

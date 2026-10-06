@@ -62,18 +62,20 @@ identity so the edge-runtime check never touches the database.
 (matching what the product brief asked for in each case):
 
 - **Publishing, scheduling, auto-propagation, idempotent distribution
-  queueing** — fully real. See "Database" below for how content flows.
+  queueing, and actual sending** — fully real. A Vercel Cron job
+  (`vercel.json` → `src/app/api/cron/send-notifications/route.ts`, daily
+  by default — see "Distribution" below) sends every queued EMAIL/PUSH
+  notification. See "Database" below for how content flows.
 - **Email** — a real template (HTML + plain text, `src/lib/email/templates/`)
   and a provider abstraction (`src/lib/email/providers/`) with a
-  `ConsoleEmailProvider` that logs instead of sending. Connect a real
-  provider (Resend, Postmark, SES…) by adding one file there — nothing
-  else changes.
+  `ConsoleEmailProvider` that logs instead of sending. The cron job calls
+  it for real on schedule; connect a real provider (Resend, Postmark,
+  SES…) by adding one file there — nothing else changes.
 - **Web push** — actually real: `npm run db:seed`-free, self-generated
   VAPID keys (no external account) let the public "🔔 REMIND ME" button
   genuinely subscribe a browser (`src/components/PushOptIn.tsx`,
-  `public/sw.js`), and `src/lib/push/sendPush.ts` can really send to
-  everyone subscribed. It's just not wired to run automatically — call
-  it from a cron route once you're ready to notify people for real.
+  `public/sw.js`), and the cron job calls `src/lib/push/sendPush.ts` to
+  really send to everyone subscribed, on schedule.
   Browser permission is only ever requested after the visitor clicks the
   button, never on page load.
   **Important:** `web-push` requires Node's crypto APIs, so it can't run
@@ -198,13 +200,36 @@ image — see `src/components/UnsplashCredit.tsx`.
   credentials) is ever referenced from a `"use client"` module; only
   `NEXT_PUBLIC_`-prefixed values reach the browser.
 
+## Distribution: how a publish turns into a send
+
+1. Publishing (or a scheduled Word going live) queues a `NotificationLog`
+   row per enabled channel — see
+   `src/app/api/studio/devotionals/[id]/publish/route.ts`. Each row's
+   `idempotencyKey` (`${devotionalId}:${channel}`) means a re-publish or
+   a crashed retry can never create a duplicate send.
+2. `src/app/api/cron/send-notifications/route.ts` is what actually sends:
+   it claims due EMAIL/PUSH rows (an atomic conditional update, so two
+   overlapping runs can't both send the same row), sends through the
+   email provider / `sendPush.ts`, and only marks a row `SENT` once that
+   call actually resolves successfully — a failure is recorded with
+   `errorMessage` and left for the Distribution page's retry button.
+   SOCIAL is never auto-sent; its captions stay queued for a human to
+   copy and post.
+3. Vercel Cron (`vercel.json`) calls that route once a day by default —
+   safe for every Vercel plan. If you're on Pro or higher, you can tighten
+   `vercel.json`'s `schedule` (e.g. `*/15 * * * *`) for same-morning
+   delivery instead of next-day.
+4. The route only accepts requests carrying `CRON_SECRET` as a bearer
+   token — set the same value in both `.env.local` (local testing) and
+   Vercel's project env vars (what the actual cron invocation checks
+   against).
+
 ## Known prototype limits
 
 - See "Database" above re: SQLite → Postgres before production traffic.
-- Email and push *sending* are real, working implementations that
-  nothing currently triggers automatically — see "What's real vs. a
-  stub" above. Wire a cron route (Vercel Cron, etc.) to actually deliver
-  on schedule when you're ready.
+- Email only *looks* sent until you connect a real provider — the
+  `ConsoleEmailProvider` the cron calls by default just logs instead of
+  reaching an inbox. See "What's real vs. a stub" above.
 - `SITE_URL` resolution lives in `next.config.ts` / `src/lib/site.ts` —
   it already works correctly on Vercel out of the box (falls back to the
   `*.vercel.app` domain), but set `NEXT_PUBLIC_SITE_URL` once you attach
