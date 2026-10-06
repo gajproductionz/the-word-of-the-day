@@ -34,7 +34,7 @@ export async function searchUnsplashImage(query: string): Promise<UnsplashImageM
     return null;
   }
 
-  const searchUrl = `${API_BASE}/search/photos?query=${encodeURIComponent(query)}&per_page=5&orientation=landscape&content_filter=high`;
+  const searchUrl = `${API_BASE}/search/photos?query=${encodeURIComponent(query)}&per_page=10&orientation=landscape&content_filter=high`;
 
   const res = await fetch(searchUrl, {
     headers: { Authorization: `Client-ID ${accessKey}` },
@@ -46,7 +46,12 @@ export async function searchUnsplashImage(query: string): Promise<UnsplashImageM
   }
 
   const data = (await res.json()) as { results: UnsplashSearchPhoto[] };
-  const photo = data.results?.[0];
+  // Picked at random among the top matches (not always the #1 result) so
+  // devotionals that share a topic-derived query don't all end up with
+  // the exact same photo — still relevant to the verse, just varied.
+  const photo = data.results?.length
+    ? data.results[Math.floor(Math.random() * data.results.length)]
+    : undefined;
   if (!photo) {
     console.warn(`[unsplash] no results for "${query}"`);
     return null;

@@ -1,8 +1,14 @@
 /**
  * Automatically sources a fitting Unsplash photo for every devotional
  * that doesn't have one cached yet, based on its topic (or an explicit
- * `unsplashQuery` override) — so adding tomorrow's Word never requires
- * manually finding a photo.
+ * `unsplashQuery` override) — so adding tomorrow's Word (or importing an
+ * archive, or anything else written in Studio) never requires manually
+ * finding a photo.
+ *
+ * Reads devotionals straight from the database — the content layer's
+ * single source of truth since the Studio migration — not a static file,
+ * so this always covers every devotional that actually exists, including
+ * ones Studio created after this script was last run.
  *
  * Usage:
  *   npm run fetch-images          # only resolve devotionals missing an image
@@ -12,11 +18,15 @@
  */
 import { config } from "dotenv";
 config({ path: ".env.local" });
+config({ path: ".env" });
 
-import { devotionals } from "../src/content/devotionals";
+import { PrismaClient } from "@prisma/client";
 import { getImageQuery } from "../src/lib/imageQuery";
 import { searchUnsplashImage } from "../src/lib/unsplash";
 import { getCachedImage, writeCachedImage } from "../src/lib/imageCache";
+import type { Topic } from "../src/content/types";
+
+const db = new PrismaClient();
 
 async function main() {
   const force = process.argv.includes("--force");
@@ -27,6 +37,11 @@ async function main() {
     );
     process.exit(1);
   }
+
+  const devotionals = await db.devotional.findMany({
+    include: { topics: true },
+    orderBy: { date: "desc" },
+  });
 
   let resolved = 0;
   let skipped = 0;
@@ -39,7 +54,10 @@ async function main() {
       continue;
     }
 
-    const query = getImageQuery(devotional);
+    const query = getImageQuery({
+      topics: devotional.topics.map((t) => t.name) as Topic[],
+      unsplashQuery: devotional.unsplashQuery ?? undefined,
+    });
     console.log(`Searching "${query}" for "${devotional.title}"…`);
 
     try {
@@ -64,4 +82,9 @@ async function main() {
   console.log(`\nDone. ${resolved} resolved, ${skipped} already cached, ${failed} failed.`);
 }
 
-main();
+main()
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  })
+  .finally(() => db.$disconnect());
