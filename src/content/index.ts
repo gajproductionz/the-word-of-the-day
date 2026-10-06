@@ -236,6 +236,12 @@ export async function searchDevotionals(query: string): Promise<Devotional[]> {
   return rows.map(toDevotional);
 }
 
+/** The ministry's configured timezone for scheduling and "today" labels. */
+export async function getDefaultTimezone(): Promise<string> {
+  const settings = await db.settings.upsert({ where: { id: "default" }, create: { id: "default" }, update: {} });
+  return settings.defaultTimezone;
+}
+
 export async function getAllTopics(): Promise<Topic[]> {
   const rows = await db.topic.findMany({ orderBy: { name: "asc" } });
   return rows.map((t) => t.name) as Topic[];

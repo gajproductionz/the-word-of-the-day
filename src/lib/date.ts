@@ -49,6 +49,23 @@ export const COMMON_TIMEZONES = [
 ];
 
 /**
+ * Today's date ("YYYY-MM-DD") as it currently reads in a given IANA
+ * timezone — used for the homepage's "today" label, which must advance
+ * with the calendar even on days nobody has published a new Word yet,
+ * rather than freezing on whichever devotional happens to be featured.
+ */
+export function getTodayInTimezone(timeZone: string): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const lookup = Object.fromEntries(parts.map((p) => [p.type, p.value]));
+  return `${lookup.year}-${lookup.month}-${lookup.day}`;
+}
+
+/**
  * Converts a wall-clock date/time in a specific IANA timezone to the
  * correct UTC instant — scheduling must never assume the admin's own
  * device timezone (brief section 7), so the chosen zone is applied

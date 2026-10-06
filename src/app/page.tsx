@@ -4,9 +4,14 @@ import {
   getSeasonPick,
   getFeaturedSeries,
   getDevotionalsBySeries,
+  getDefaultTimezone,
 } from "@/content";
 import { resolveImage, resolveImages } from "@/lib/resolveImage";
-import { formatLongDate } from "@/lib/date";
+import { formatLongDate, getTodayInTimezone } from "@/lib/date";
+
+// Refreshed hourly so the hero's date always reads as today — not just
+// when someone happens to publish or edit a devotional in Studio.
+export const revalidate = 3600;
 import Hero from "@/components/home/Hero";
 import TodaysWord from "@/components/home/TodaysWord";
 import NeedAWordPreview from "@/components/home/NeedAWordPreview";
@@ -24,6 +29,8 @@ export default async function HomePage() {
   const seasonPick = await getSeasonPick();
   const featuredSeries = await getFeaturedSeries();
   const seriesDays = featuredSeries ? await getDevotionalsBySeries(featuredSeries.slug) : [];
+  const timezone = await getDefaultTimezone();
+  const todayLabel = formatLongDate(getTodayInTimezone(timezone));
 
   const [todaysWordWithImage, recentWithImages, seasonPickWithImage] = await Promise.all([
     resolveImage(todaysWord),
@@ -33,7 +40,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero dateLabel={formatLongDate(todaysWord.date)} image={todaysWordWithImage} />
+      <Hero dateLabel={todayLabel} image={todaysWordWithImage} />
       <TodaysWord devotional={{ ...todaysWord, resolvedImage: todaysWordWithImage }} />
       <NeedAWordPreview />
       <RecentWords devotionals={recentWithImages} />
