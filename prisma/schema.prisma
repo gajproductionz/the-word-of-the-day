@@ -1,19 +1,20 @@
 // The Word of the Day — Studio data layer.
 //
-// Local development uses SQLite (zero external setup). SQLite's file
-// storage does not reliably persist on Vercel's serverless functions, so
-// before relying on this in production, swap `provider` below to
-// "postgresql", point DATABASE_URL at a hosted Postgres (Neon / Vercel
-// Postgres), and run `prisma migrate dev` once against it. The schema
-// itself uses only cross-provider-portable types for exactly this reason.
+// Prisma Postgres — both local dev and production point at the same
+// hosted database via POSTGRES_URL (the direct, non-Accelerate
+// connection string; DATABASE_URL/PRISMA_DATABASE_URL are the Accelerate
+// proxy URL, which this app doesn't use). The schema was originally built
+// against SQLite for zero-setup local dev, then switched over once
+// production needed real persistence; it only ever used cross-provider-
+// portable types for exactly this reason.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
 }
 
 // ---------------------------------------------------------------------
