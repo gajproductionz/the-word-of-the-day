@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getSession } from "@/lib/auth";
-import { devotionalInputSchema } from "@/lib/validation";
+import { devotionalDraftSchema } from "@/lib/validation";
 import { buildDevotionalData } from "@/lib/studio/saveDevotional";
 
 function slugify(title: string): string {
@@ -48,21 +48,10 @@ export async function POST(request: NextRequest) {
   const slugBase = typeof body.slug === "string" && body.slug.trim() ? slugify(body.slug) : slugify(title);
   const slug = await uniqueSlug(slugBase);
 
-  const parsed = devotionalInputSchema.safeParse({
+  const parsed = devotionalDraftSchema.safeParse({
     date: new Date().toISOString().slice(0, 10),
-    book: "Psalm",
     chapter: 1,
     verseStart: 1,
-    scriptureReference: "",
-    scriptureText: "",
-    keyMessage: "",
-    reflection: [""],
-    reflectionQuestion: "",
-    prayer: "",
-    featuredImage: "sunrise-ridge",
-    featuredImageAlt: "",
-    seoTitle: title,
-    seoDescription: "",
     status: "DRAFT",
     ...body,
     title,

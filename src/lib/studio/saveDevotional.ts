@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
 import type { DevotionalInput } from "@/lib/validation";
+import type { Devotional as PrismaDevotional, Topic as PrismaTopic, Series as PrismaSeries } from "@prisma/client";
 
 async function resolveSeriesId(seriesSlug: string | null | undefined): Promise<string | null> {
   if (!seriesSlug) return null;
@@ -65,4 +66,38 @@ export async function buildDevotionalData(input: DevotionalInput) {
   };
 
   return { fields, topicIds };
+}
+
+/**
+ * Reconstructs the same shape devotionalInputSchema expects from a saved
+ * row — used by the publish and schedule routes to check readiness
+ * against the DB's current state, since autosave validates against the
+ * looser devotionalDraftSchema and may have left required fields empty.
+ */
+export function toPublishCheckInput(
+  d: PrismaDevotional & { topics: PrismaTopic[]; series: PrismaSeries | null }
+) {
+  return {
+    slug: d.slug,
+    date: d.date.toISOString().slice(0, 10),
+    title: d.title,
+    book: d.book,
+    chapter: d.chapter,
+    verseStart: d.verseStart,
+    verseEnd: d.verseEnd,
+    scriptureReference: d.scriptureReference,
+    scriptureText: d.scriptureText,
+    keyMessage: d.keyMessage,
+    reflection: d.reflection,
+    reflectionQuestion: d.reflectionQuestion,
+    prayer: d.prayer,
+    topics: d.topics.map((t) => t.name),
+    seriesSlug: d.series?.slug ?? null,
+    seriesDay: d.seriesDay,
+    featuredImage: d.featuredImage,
+    featuredImageAlt: d.featuredImageAlt,
+    seoTitle: d.seoTitle,
+    seoDescription: d.seoDescription,
+    status: "PUBLISHED" as const,
+  };
 }

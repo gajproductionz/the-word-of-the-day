@@ -39,6 +39,65 @@ export const devotionalInputSchema = z.object({
 
 export type DevotionalInput = z.infer<typeof devotionalInputSchema>;
 
+/**
+ * A draft is allowed to be incomplete — this is what ordinary autosave
+ * (create + every PATCH while writing) validates against, so the very
+ * first keystroke in a brand-new Word can save immediately instead of
+ * 400ing until every field is filled in. Structural fields (slug, date,
+ * numbers, status) still validate for real, since those can never be
+ * blank without corrupting the row. Only publishing enforces full
+ * completeness — see getPublishIssues below.
+ */
+export const devotionalDraftSchema = devotionalInputSchema.extend({
+  title: z.string().trim().max(200).default(""),
+  book: z.string().trim().default("Psalm"),
+  // A momentarily-cleared number field while retyping (e.g. backspacing
+  // "8" before typing "9") would otherwise 400 an autosave mid-keystroke.
+  chapter: z.coerce.number().int().positive().catch(1),
+  verseStart: z.coerce.number().int().positive().catch(1),
+  scriptureReference: z.string().trim().default(""),
+  scriptureText: z.string().trim().default(""),
+  keyMessage: z.string().trim().max(300).default(""),
+  reflection: z.array(z.string()).default([""]),
+  reflectionQuestion: z.string().trim().default(""),
+  prayer: z.string().trim().default(""),
+  featuredImage: z.string().trim().default("sunrise-ridge"),
+  featuredImageAlt: z.string().trim().default(""),
+  seoTitle: z.string().trim().max(200).default(""),
+  seoDescription: z.string().trim().max(300).default(""),
+});
+
+const PUBLISH_FIELD_LABELS: Record<string, string> = {
+  title: "Title",
+  book: "Bible book",
+  scriptureReference: "Scripture reference",
+  scriptureText: "Scripture text",
+  keyMessage: "Key message",
+  reflection: "Reflection",
+  reflectionQuestion: "Reflection question",
+  prayer: "Prayer",
+  featuredImage: "Fallback image",
+  featuredImageAlt: "Image alt text",
+  seoTitle: "SEO title",
+  seoDescription: "SEO description",
+};
+
+/**
+ * What's missing before a devotional can go live — used by the publish
+ * and schedule routes so "didn't work" always comes with a specific,
+ * actionable reason instead of a silent failure. Empty array means ready.
+ */
+export function getPublishIssues(data: unknown): string[] {
+  const parsed = devotionalInputSchema.safeParse(data);
+  if (parsed.success) return [];
+  const labels = new Set<string>();
+  for (const issue of parsed.error.issues) {
+    const key = String(issue.path[0] ?? "");
+    labels.add(PUBLISH_FIELD_LABELS[key] ?? key);
+  }
+  return [...labels];
+}
+
 export const prayerSubmissionSchema = z.object({
   name: z.string().trim().max(60).optional().default(""),
   request: z.string().trim().min(1, "Please share your prayer request.").max(1000),

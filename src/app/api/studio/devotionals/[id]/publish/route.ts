@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { revalidatePublicContent } from "@/lib/studio/revalidate";
 import { generateSocialCaptions } from "@/lib/socialCaptions";
+import { getPublishIssues } from "@/lib/validation";
+import { toPublishCheckInput } from "@/lib/studio/saveDevotional";
 import type { Devotional as PublicDevotional } from "@/content/types";
 
 /**
@@ -22,6 +24,14 @@ export async function POST(_request: NextRequest, { params }: { params: Promise<
     include: { topics: true, series: true },
   });
   if (!devotional) return NextResponse.json({ error: "Not found." }, { status: 404 });
+
+  const issues = getPublishIssues(toPublishCheckInput(devotional));
+  if (issues.length > 0) {
+    return NextResponse.json(
+      { error: `Before publishing, fill in: ${issues.join(", ")}.` },
+      { status: 400 }
+    );
+  }
 
   const now = new Date();
 

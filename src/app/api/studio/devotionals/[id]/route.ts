@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { devotionalInputSchema } from "@/lib/validation";
+import { devotionalDraftSchema } from "@/lib/validation";
 import { buildDevotionalData } from "@/lib/studio/saveDevotional";
 import { revalidatePublicContent } from "@/lib/studio/revalidate";
 
@@ -65,7 +65,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     ...body,
   };
 
-  const parsed = devotionalInputSchema.safeParse(merged);
+  const parsed = devotionalDraftSchema.safeParse(merged);
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid data." }, { status: 400 });
   }

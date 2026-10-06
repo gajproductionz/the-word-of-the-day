@@ -60,10 +60,13 @@ export default function DevotionalEditor({
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">(
     initial.id ? "saved" : "idle"
   );
+  const [saveErrorMessage, setSaveErrorMessage] = useState<string | null>(null);
   const [showImport, setShowImport] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
+  const [scheduleError, setScheduleError] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
 
   const idRef = useRef(initial.id);
@@ -75,7 +78,13 @@ export default function DevotionalEditor({
     setDirty(true);
   }
 
-  const save = useCallback(async () => {
+  /**
+   * Returns the save's actual outcome directly (not via state, which
+   * wouldn't be visible to a caller `await`ing this same async function
+   * until the *next* render) — so publish/schedule can react to exactly
+   * what happened instead of silently proceeding with a stale id.
+   */
+  const save = useCallback(async (): Promise<{ ok: true } | { ok: false; error: string }> => {
     setSaveState("saving");
     try {
       if (!idRef.current) {
@@ -85,7 +94,7 @@ export default function DevotionalEditor({
           body: JSON.stringify(form),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
+        if (!res.ok) throw new Error(data.error || "Couldn't save this Word.");
         idRef.current = data.devotional.id;
         setForm((prev) => ({ ...prev, id: data.devotional.id, slug: data.devotional.slug }));
         router.replace(`/studio/devotionals/${data.devotional.id}`);
@@ -96,12 +105,17 @@ export default function DevotionalEditor({
           body: JSON.stringify(form),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
+        if (!res.ok) throw new Error(data.error || "Couldn't save this Word.");
       }
       setSaveState("saved");
+      setSaveErrorMessage(null);
       setDirty(false);
-    } catch {
+      return { ok: true };
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Couldn't save this Word.";
       setSaveState("error");
+      setSaveErrorMessage(message);
+      return { ok: false, error: message };
     }
   }, [form, router]);
 
@@ -157,28 +171,44 @@ export default function DevotionalEditor({
 
   async function handlePublishConfirm() {
     setPublishing(true);
-    await save();
+    setPublishError(null);
     try {
+      const saveResult = await save();
+      if (!saveResult.ok || !idRef.current) {
+        setPublishError(!saveResult.ok ? saveResult.error : "Couldn't save this Word before publishing.");
+        return;
+      }
       const res = await fetch(`/api/studio/devotionals/${idRef.current}/publish`, { method: "POST" });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      if (!res.ok) throw new Error(data.error || "Publishing failed.");
       setForm((prev) => ({ ...prev, status: "PUBLISHED", featured: true }));
       setShowPublishModal(false);
+    } catch (err) {
+      setPublishError(err instanceof Error ? err.message : "Publishing failed.");
     } finally {
       setPublishing(false);
     }
   }
 
   async function handleScheduleConfirm(publishAt: string, emailSendAt: string | null, pushSendAt: string | null) {
-    await save();
-    const res = await fetch(`/api/studio/devotionals/${idRef.current}/schedule`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ publishAt, emailSendAt, pushSendAt }),
-    });
-    if (res.ok) {
+    setScheduleError(null);
+    const saveResult = await save();
+    if (!saveResult.ok || !idRef.current) {
+      setScheduleError(!saveResult.ok ? saveResult.error : "Couldn't save this Word before scheduling.");
+      return;
+    }
+    try {
+      const res = await fetch(`/api/studio/devotionals/${idRef.current}/schedule`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ publishAt, emailSendAt, pushSendAt }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Scheduling failed.");
       setForm((prev) => ({ ...prev, status: "SCHEDULED", publishAt }));
       setShowScheduleModal(false);
+    } catch (err) {
+      setScheduleError(err instanceof Error ? err.message : "Scheduling failed.");
     }
   }
 
@@ -201,7 +231,7 @@ export default function DevotionalEditor({
             <span className="ml-3 font-sans text-xs text-charcoal/40">
               {saveState === "saving" && "Saving…"}
               {saveState === "saved" && "SAVED"}
-              {saveState === "error" && "Couldn't save — check your connection"}
+              {saveState === "error" && (saveErrorMessage ?? "Couldn't save — check your connection")}
             </span>
           </div>
           <button
@@ -548,14 +578,20 @@ export default function DevotionalEditor({
           </button>
           <button
             type="button"
-            onClick={() => setShowScheduleModal(true)}
+            onClick={() => {
+              setScheduleError(null);
+              setShowScheduleModal(true);
+            }}
             className="rounded-full border border-charcoal/20 px-5 py-2.5 font-sans text-xs font-semibold tracking-[0.12em] text-charcoal hover:border-forest hover:text-forest"
           >
             SCHEDULE
           </button>
           <button
             type="button"
-            onClick={() => setShowPublishModal(true)}
+            onClick={() => {
+              setPublishError(null);
+              setShowPublishModal(true);
+            }}
             className="rounded-full bg-forest px-5 py-2.5 font-sans text-xs font-semibold tracking-[0.12em] text-ivory hover:bg-forest-light"
           >
             PUBLISH NOW
@@ -586,6 +622,7 @@ export default function DevotionalEditor({
           scriptureReference={form.scriptureReference}
           date={form.date}
           loading={publishing}
+          error={publishError}
           onConfirm={handlePublishConfirm}
           onCancel={() => setShowPublishModal(false)}
         />
@@ -595,6 +632,7 @@ export default function DevotionalEditor({
         <ScheduleModal
           defaultTimezone={defaultTimezone}
           defaultEmailDelayMinutes={defaultEmailDelayMinutes}
+          error={scheduleError}
           onConfirm={handleScheduleConfirm}
           onCancel={() => setShowScheduleModal(false)}
         />

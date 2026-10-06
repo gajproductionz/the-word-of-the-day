@@ -6,6 +6,7 @@ import { COMMON_TIMEZONES, zonedTimeToUtc } from "@/lib/date";
 interface ScheduleModalProps {
   defaultTimezone?: string;
   defaultEmailDelayMinutes?: number;
+  error?: string | null;
   onConfirm: (publishAt: string, emailSendAt: string | null, pushSendAt: string | null) => void | Promise<void>;
   onCancel: () => void;
 }
@@ -13,6 +14,7 @@ interface ScheduleModalProps {
 export default function ScheduleModal({
   defaultTimezone = "America/New_York",
   defaultEmailDelayMinutes = 30,
+  error,
   onConfirm,
   onCancel,
 }: ScheduleModalProps) {
@@ -92,6 +94,12 @@ export default function ScheduleModal({
             className="mt-1 w-full rounded-sm border border-charcoal/20 bg-white/60 px-3 py-2 font-sans text-sm outline-none focus:border-forest"
           />
         </div>
+
+        {error && (
+          <p role="alert" className="mt-5 rounded-sm bg-red-700/10 px-4 py-3 font-sans text-sm text-red-700">
+            {error}
+          </p>
+        )}
 
         <div className="mt-7 flex gap-3">
           <button

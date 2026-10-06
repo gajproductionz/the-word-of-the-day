@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getPublishIssues } from "@/lib/validation";
+import { toPublishCheckInput } from "@/lib/studio/saveDevotional";
 
 /**
  * Schedules a devotional for a future publishAt — it only actually goes
@@ -20,6 +22,20 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   if (!body.publishAt) {
     return NextResponse.json({ error: "A publish date and time are required." }, { status: 400 });
+  }
+
+  const existing = await db.devotional.findUnique({
+    where: { id },
+    include: { topics: true, series: true },
+  });
+  if (!existing) return NextResponse.json({ error: "Not found." }, { status: 404 });
+
+  const issues = getPublishIssues(toPublishCheckInput(existing));
+  if (issues.length > 0) {
+    return NextResponse.json(
+      { error: `Before scheduling, fill in: ${issues.join(", ")}.` },
+      { status: 400 }
+    );
   }
 
   const devotional = await db.devotional.update({

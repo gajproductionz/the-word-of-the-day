@@ -9,6 +9,7 @@ interface PublishModalProps {
   onConfirm: () => void;
   onCancel: () => void;
   loading: boolean;
+  error?: string | null;
 }
 
 export default function PublishModal({
@@ -18,6 +19,7 @@ export default function PublishModal({
   onConfirm,
   onCancel,
   loading,
+  error,
 }: PublishModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-near-black/60 px-5">
@@ -40,6 +42,12 @@ export default function PublishModal({
             <li>Update homepage content</li>
           </ul>
         </div>
+
+        {error && (
+          <p role="alert" className="mt-5 rounded-sm bg-red-700/10 px-4 py-3 font-sans text-sm text-red-700">
+            {error}
+          </p>
+        )}
 
         <div className="mt-7 flex gap-3">
           <button
