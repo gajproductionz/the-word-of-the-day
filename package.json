@@ -11,6 +11,7 @@
     "fetch-images": "tsx scripts/fetch-devotional-images.ts",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
+    "db:import-archive": "tsx prisma/import-archive.ts",
     "db:studio": "prisma studio"
   },
   "dependencies": {

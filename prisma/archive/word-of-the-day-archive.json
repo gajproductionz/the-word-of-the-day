@@ -1,0 +1,721 @@
+{
+  "archiveName": "The Word of the Day — Historical Archive Pack",
+  "version": "1.0-recovered",
+  "generatedFor": "The Word of the Day website import",
+  "primaryTranslation": "KJV",
+  "format": [
+    "Good Morning Family",
+    "Scripture",
+    "Key Message",
+    "Reflection",
+    "Prayer",
+    "— TheWordofTheDay"
+  ],
+  "integrityPolicy": "Only records with sufficiently recovered historical wording are importable. Catalog-only entries must not be fabricated.",
+  "devotionals": [
+    {
+      "id": "wotd-matthew-6-33",
+      "slug": "seek-first",
+      "date": "2025-04-07",
+      "title": "Seek First",
+      "scriptureReference": "Matthew 6:33",
+      "translation": "KJV",
+      "book": "Matthew",
+      "chapter": 6,
+      "verseStart": 33,
+      "verseEnd": 33,
+      "scriptureText": "But seek ye first the kingdom of God, and his righteousness; and all these things shall be added unto you.",
+      "keyMessage": "Whatever you're chasing today, let God lead the way.",
+      "reflection": "Prioritize God's kingdom above worries, ambitions, and needs. Seeking Him first aligns your heart with His will and helps you trust His timing, direction, and provision.",
+      "prayer": "Lord, help me to seek You first. Teach me to trust Your timing and Your plan, and fill my heart with peace. Thank You for always providing what I need when I keep my eyes on You.",
+      "topics": [
+        "Faith",
+        "Priorities",
+        "Trust",
+        "God First"
+      ],
+      "series": "Journey Through Matthew",
+      "recoveryStatus": "near-complete",
+      "sourceNote": "Recovered from prior Word of the Day conversation; wording preserved where retrievable."
+    },
+    {
+      "id": "wotd-matthew-5-14",
+      "slug": "shine-for-impact",
+      "date": "2025-04-07",
+      "title": "Shine for Impact",
+      "scriptureReference": "Matthew 5:14",
+      "translation": "KJV",
+      "book": "Matthew",
+      "chapter": 5,
+      "verseStart": 14,
+      "verseEnd": 14,
+      "scriptureText": "Ye are the light of the world. A city that is set on an hill cannot be hid.",
+      "keyMessage": "Shine today—not for applause, but for impact.",
+      "reflection": "God calls you to reflect His love, hope, and truth. Do not dim the light God placed in you simply to fit into dark spaces.",
+      "prayer": "Lord, give me bold faith and kind actions today. Let my life reflect Your light and brighten someone else's path.",
+      "topics": [
+        "Faith",
+        "Purpose",
+        "Light",
+        "Witness"
+      ],
+      "series": "Journey Through Matthew",
+      "recoveryStatus": "partial"
+    },
+    {
+      "id": "wotd-matthew-5-6",
+      "slug": "stay-hungry-for-god",
+      "date": "2025-04-07",
+      "title": "Stay Hungry for God",
+      "scriptureReference": "Matthew 5:6",
+      "translation": "KJV",
+      "book": "Matthew",
+      "chapter": 5,
+      "verseStart": 6,
+      "verseEnd": 6,
+      "scriptureText": "Blessed are they which do hunger and thirst after righteousness: for they shall be filled.",
+      "keyMessage": "Stay hungry for God—and watch Him satisfy your soul.",
+      "reflection": "God promises to fill those who genuinely hunger and thirst for righteousness. Spiritual hunger keeps us seeking His Word, His presence, and His ways.",
+      "prayer": "Lord, deepen my hunger for You. Give me a renewed desire for Your Word, Your presence, and righteousness.",
+      "topics": [
+        "Spiritual Growth",
+        "Righteousness",
+        "Hunger for God"
+      ],
+      "series": "Journey Through Matthew",
+      "recoveryStatus": "partial"
+    },
+    {
+      "id": "wotd-matthew-11-28",
+      "slug": "release-the-weight",
+      "date": "2025-04-07",
+      "title": "Release the Weight",
+      "scriptureReference": "Matthew 11:28",
+      "translation": "KJV",
+      "book": "Matthew",
+      "chapter": 11,
+      "verseStart": 28,
+      "verseEnd": 28,
+      "scriptureText": "Come unto me, all ye that labour and are heavy laden, and I will give you rest.",
+      "keyMessage": "Release the weight. Rest in His presence.",
+      "reflection": "Jesus invites us to bring Him the stress, grief, pressure, and exhaustion we have been carrying. Rest begins when we stop pretending we can carry everything alone.",
+      "prayer": "Lord, I bring You the weight I have been carrying. Help me release it and rest in Your presence, strength, and peace.",
+      "topics": [
+        "Rest",
+        "Peace",
+        "Stress",
+        "Trust"
+      ],
+      "series": "Journey Through Matthew",
+      "recoveryStatus": "partial"
+    },
+    {
+      "id": "wotd-matthew-24-10",
+      "slug": "guard-your-heart-from-offense",
+      "date": "2026-02-23",
+      "title": "Guard Your Heart From Offense",
+      "scriptureReference": "Matthew 24:10",
+      "translation": "KJV",
+      "book": "Matthew",
+      "chapter": 24,
+      "verseStart": 10,
+      "verseEnd": 10,
+      "scriptureText": "And then shall many be offended, and shall betray one another, and shall hate one another.",
+      "keyMessage": "Offense is contagious—but so is maturity. Guard your heart.",
+      "reflection": "Hurt must be processed wisely. We can acknowledge pain without allowing bitterness to take control. Spiritual maturity chooses wisdom, grace, and love instead of living from offense.",
+      "prayer": "Lord, protect my heart from offense and bitterness. Help me respond with wisdom, grace, and love.",
+      "topics": [
+        "Relationships",
+        "Offense",
+        "Forgiveness",
+        "Maturity"
+      ],
+      "series": "Journey Through Matthew",
+      "recoveryStatus": "near-complete"
+    },
+    {
+      "id": "wotd-galatians-1-10",
+      "slug": "integrity-over-validation",
+      "date": "2026-02-02",
+      "title": "Integrity Over Validation",
+      "scriptureReference": "Galatians 1:10",
+      "translation": "KJV",
+      "book": "Galatians",
+      "chapter": 1,
+      "verseStart": 10,
+      "verseEnd": 10,
+      "scriptureText": "For do I now persuade men, or God? or do I seek to please men? for if I yet pleased men, I should not be the servant of Christ.",
+      "keyMessage": "Choose integrity over validation.",
+      "reflection": "The pressure to please people can pull us away from purpose. Following God requires clarity about whose approval matters most and courage to remain aligned even when everyone does not understand.",
+      "prayer": "Lord, give me clarity, courage, and discipline. Keep me aligned with You and free me from living for the approval of people.",
+      "topics": [
+        "Integrity",
+        "Purpose",
+        "People Pleasing",
+        "Obedience"
+      ],
+      "series": "Journey Through Galatians",
+      "recoveryStatus": "near-complete"
+    },
+    {
+      "id": "wotd-galatians-4-1",
+      "slug": "access-does-not-equal-readiness",
+      "date": "2026-02-20",
+      "title": "Access Doesn't Equal Readiness",
+      "scriptureReference": "Galatians 4:1",
+      "translation": "KJV",
+      "book": "Galatians",
+      "chapter": 4,
+      "verseStart": 1,
+      "verseEnd": 1,
+      "scriptureText": "Now I say, That the heir, as long as he is a child, differeth nothing from a servant, though he be lord of all;",
+      "keyMessage": "Access doesn't equal readiness.",
+      "reflection": "Growth and maturity transform ownership into stewardship. Sometimes what God has prepared requires us to first develop the character, discipline, and wisdom necessary to carry it well.",
+      "prayer": "Lord, grow me into what You have prepared for me. Develop my character, discipline, and wisdom so I can steward Your blessings well.",
+      "topics": [
+        "Growth",
+        "Maturity",
+        "Stewardship",
+        "Preparation"
+      ],
+      "series": "Journey Through Galatians",
+      "recoveryStatus": "near-complete"
+    },
+    {
+      "id": "wotd-titus-1-5",
+      "slug": "bring-order-to-what-is-out-of-place",
+      "date": "2026-03-25",
+      "title": "Bring Order to What Is Out of Place",
+      "scriptureReference": "Titus 1:5",
+      "translation": "KJV",
+      "book": "Titus",
+      "chapter": 1,
+      "verseStart": 5,
+      "verseEnd": 5,
+      "scriptureText": "For this cause left I thee in Crete, that thou shouldest set in order the things that are wanting, and ordain elders in every city, as I had appointed thee:",
+      "keyMessage": "Part of your calling is bringing order to what is out of place.",
+      "reflection": "God does not only call us to dream; He calls us to establish, organize, repair, and finish. Sometimes purpose looks like bringing structure to what has been neglected.",
+      "prayer": "Lord, show me what needs order in my life and give me the wisdom, discipline, and courage to address it faithfully.",
+      "topics": [
+        "Purpose",
+        "Order",
+        "Leadership",
+        "Discipline"
+      ],
+      "series": "Journey Through Titus",
+      "recoveryStatus": "near-complete"
+    },
+    {
+      "id": "wotd-titus-2-4",
+      "slug": "growth-should-flow-through-you",
+      "date": "2026-04-01",
+      "title": "Growth Should Flow Through You",
+      "scriptureReference": "Titus 2:4",
+      "translation": "KJV",
+      "book": "Titus",
+      "chapter": 2,
+      "verseStart": 4,
+      "verseEnd": 4,
+      "scriptureText": "That they may teach the young women to be sober, to love their husbands, to love their children,",
+      "keyMessage": "Growth should flow through you.",
+      "reflection": "What God teaches us should not stop with us. Mature faith creates a responsibility to guide others through love, discipline, wisdom, and example.",
+      "prayer": "Lord, help me guide others with wisdom, humility, and care. Let what You teach me become a blessing to someone else.",
+      "topics": [
+        "Mentorship",
+        "Growth",
+        "Leadership",
+        "Example"
+      ],
+      "series": "Journey Through Titus",
+      "recoveryStatus": "near-complete"
+    },
+    {
+      "id": "wotd-proverbs-10-11",
+      "slug": "a-fountain-of-life",
+      "date": "2025-07-01",
+      "title": "A Fountain of Life",
+      "scriptureReference": "Proverbs 10:11",
+      "translation": "KJV",
+      "book": "Proverbs",
+      "chapter": 10,
+      "verseStart": 11,
+      "verseEnd": 11,
+      "scriptureText": "The mouth of a righteous man is a well of life: but violence covereth the mouth of the wicked.",
+      "keyMessage": "Let your words give life.",
+      "reflection": "Our words can nourish, restore, encourage, and redirect. The way we speak should reflect the God we serve and leave people stronger rather than wounded.",
+      "prayer": "Lord, guard my mouth and shape my words. Let what I say reflect You and become a source of life, encouragement, truth, and restoration.",
+      "topics": [
+        "Wisdom",
+        "Speech",
+        "Encouragement",
+        "Character"
+      ],
+      "series": "Proverbs: Wisdom for Life",
+      "recoveryStatus": "near-complete"
+    }
+  ],
+  "historicalCatalog": [
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 4:4",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 5:37",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 6:34",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 6:21",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 7:7",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 19:26",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 16:24",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 9:22",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 12:34",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 23:12",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 11:29",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 9:37",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 7:12",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 8:26",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Matthew",
+      "scriptureReference": "Matthew 28:19",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 5:1",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 5:6",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 5:7",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 5:13",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 5:16",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 5:22-23",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 5:25",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 6:1",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 6:2",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 6:3",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 6:4",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 6:5",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 6:7",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Galatians",
+      "scriptureReference": "Galatians 6:9",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 1:2",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 1:7",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 1:8",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 1:9",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 1:10",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 1:15",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 2:1",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 2:2",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 2:3",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 2:6",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 2:7",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 2:8",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 2:11",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 2:12",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 3:1",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 3:2",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 3:3",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 3:5",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 3:7",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 3:8",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Titus",
+      "scriptureReference": "Titus 3:9",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Nehemiah",
+      "scriptureReference": "Nehemiah 2:8",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "James",
+      "scriptureReference": "James 5:16",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Psalm",
+      "scriptureReference": "Psalm 51:10",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Ezekiel",
+      "scriptureReference": "Ezekiel 36:26",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Acts",
+      "scriptureReference": "Acts 19:11-12",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Revelation",
+      "scriptureReference": "Revelation 2:20",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Revelation",
+      "scriptureReference": "Revelation 4",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Revelation",
+      "scriptureReference": "Revelation 5",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Revelation",
+      "scriptureReference": "Revelation 6",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Revelation",
+      "scriptureReference": "Revelation 7",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "1 Corinthians",
+      "scriptureReference": "1 Corinthians 9",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "1 Corinthians",
+      "scriptureReference": "1 Corinthians 10",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Micah",
+      "scriptureReference": "Micah 7",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Hebrews",
+      "scriptureReference": "Hebrews 11",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Isaiah",
+      "scriptureReference": "Isaiah 53",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    },
+    {
+      "book": "Ephesians",
+      "scriptureReference": "Ephesians 6:13",
+      "recoveryStatus": "catalog-only",
+      "import": false,
+      "note": "Historical Word of the Day entry/series reference is known, but the complete original devotional wording was not safely recoverable from available conversation context. Do not invent or rewrite it."
+    }
+  ]
+}

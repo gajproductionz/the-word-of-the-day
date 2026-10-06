@@ -1,0 +1,13 @@
+{
+  "packageVersion": "1.0-recovered",
+  "importableDevotionals": 10,
+  "nearComplete": 7,
+  "partial": 3,
+  "catalogOnly": 66,
+  "files": [
+    "word-of-the-day-archive.json",
+    "word-of-the-day-archive.md",
+    "CLAUDE-IMPORT-INSTRUCTIONS.md",
+    "archive-manifest.json"
+  ]
+}
