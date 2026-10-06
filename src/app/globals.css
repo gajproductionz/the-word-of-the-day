@@ -253,3 +253,100 @@ body {
 .animate-arrow-bounce {
   animation: arrow-bounce 1.6s ease-in-out infinite;
 }
+
+/* ---------------------------------------------------------------------
+   Brand language: a small, recurring visual system built around LIGHT
+   as the metaphor for God's presence (darkness → light, waiting →
+   revelation). Four devices, used consistently rather than everywhere:
+   1. the dawn-reveal scrim (darkness resolving into warmth)
+   2. the light-leak drift (a slow, barely-visible glow in motion)
+   3. the gold rule + vertical editorial label (margin notation)
+   4. the ghost-word / numeral watermark (oversized, near-invisible type)
+   ------------------------------------------------------------------- */
+
+/* 1. Dawn-reveal: a near-black veil that lifts once on load, so dark
+   sections feel like they're resolving out of darkness rather than
+   simply appearing. Opacity only; reduced-motion collapses the duration
+   globally so content is just immediately visible. */
+@keyframes dawn-reveal {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.dawn-reveal {
+  animation: dawn-reveal 2.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+/* 2. Light-leak: an extremely slow, soft glow that drifts rather than
+   pulses — motion that "feels like breathing," not decoration. */
+@keyframes light-drift {
+  0%,
+  100% {
+    transform: translate(-4%, -2%) scale(1);
+    opacity: 0.55;
+  }
+  50% {
+    transform: translate(4%, 3%) scale(1.15);
+    opacity: 0.85;
+  }
+}
+
+.light-leak {
+  position: absolute;
+  pointer-events: none;
+  background: radial-gradient(
+    closest-side,
+    rgba(201, 165, 104, 0.5) 0%,
+    rgba(201, 165, 104, 0.12) 55%,
+    transparent 100%
+  );
+  animation: light-drift 14s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* 3. The thin gold rule + vertical editorial label — margin notation
+   that recurs across the hero, Today's Word, and section openers. */
+.rule-gold {
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold-soft), transparent);
+}
+
+.vertical-label {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  letter-spacing: 0.22em;
+}
+
+/* 4. Ghost word / numeral watermark: an oversized serif word or figure
+   set at near-zero opacity behind real content — a quiet, recognizable
+   signature rather than literal religious iconography. */
+.ghost-word {
+  font-family: var(--font-serif), serif;
+  line-height: 0.8;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* A very slow, barely-visible breathing glow — reinforces presence in
+   otherwise still, dark moments (e.g. the Be Still close) without
+   reading as "animation." */
+@keyframes glow-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: scale(1.08);
+  }
+}
+
+.animate-glow-breathe {
+  animation: glow-breathe 9s ease-in-out infinite;
+}

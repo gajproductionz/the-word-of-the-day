@@ -17,25 +17,59 @@ interface HeroProps {
 
 export default function Hero({ dateLabel, image }: HeroProps) {
   return (
-    <section className="relative flex h-[100vh] min-h-[640px] w-full items-end overflow-hidden">
+    <section className="relative flex h-[100vh] min-h-[640px] w-full items-end overflow-hidden bg-near-black">
       {/* The zoom animation lives on this wrapper (not on DevotionalImage
           itself, which clips its own overflow) so the slightly-oversized
           image can scale down into the section's own clipped frame. */}
       <div className="animate-hero-zoom absolute inset-0">
         <DevotionalImage image={image} className="absolute inset-0" priority creditTone="light">
-          <div className="absolute inset-0 bg-gradient-to-t from-near-black/70 via-near-black/10 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-near-black/75 via-near-black/15 to-near-black/40" />
         </DevotionalImage>
+      </div>
+
+      {/* Darkness resolving into warmth, once, on load — the hero's
+          "waiting → revelation" moment. Sits above the photo, fades out. */}
+      <div className="dawn-reveal pointer-events-none absolute inset-0 bg-near-black" aria-hidden="true" />
+
+      {/* Two slow, independently-drifting light leaks — the only
+          continuous motion behind the type besides the breathing scale. */}
+      <div
+        className="light-leak h-[60vmax] w-[60vmax] -top-[20vmax] -right-[10vmax]"
+        aria-hidden="true"
+        style={{ animationDelay: "-3s" }}
+      />
+      <div
+        className="light-leak h-[40vmax] w-[40vmax] -bottom-[15vmax] left-[10vmax]"
+        aria-hidden="true"
+        style={{ animationDelay: "-9s", animationDuration: "19s" }}
+      />
+
+      {/* Editorial margin device — a vertical rule of text running the
+          left edge, the recurring brand language echoed again in
+          Today's Word and the Be Still close. Decorative; hidden on
+          narrow viewports where it would crowd the headline. */}
+      <div
+        className="absolute left-5 top-28 bottom-28 hidden w-px flex-col items-center sm:left-10 sm:flex"
+        aria-hidden="true"
+      >
+        <span className="rule-gold h-16 w-px shrink-0" />
+        <span className="vertical-label mt-6 font-sans text-[0.65rem] font-medium text-ivory/50">
+          A WORD FOR TODAY
+        </span>
       </div>
 
       <div className="relative z-10 w-full px-5 pb-16 sm:px-10 sm:pb-24">
         <HeroParallax>
           <div className="mx-auto max-w-[1400px]">
-            <p
-              className="animate-fade-up font-sans text-xs font-medium tracking-[0.22em] text-ivory/80"
+            <div
+              className="animate-fade-up flex items-center gap-3"
               style={{ animationDelay: "0.3s" }}
             >
-              {dateLabel}
-            </p>
+              <span className="rule-gold w-8 sm:w-10" aria-hidden="true" />
+              <p className="font-sans text-xs font-medium tracking-[0.22em] text-ivory/80">
+                {dateLabel}
+              </p>
+            </div>
 
             <h1 className="animate-hero-breathe mt-4 font-serif text-[18vw] leading-[0.92] tracking-tight text-ivory sm:text-[11vw] md:text-[9vw] lg:text-[7.5vw]">
               <span className="mask-line">
@@ -99,26 +133,26 @@ export default function Hero({ dateLabel, image }: HeroProps) {
               </span>
             </h1>
 
-            <div
-              className="animate-fade-up mt-8 flex flex-col items-start gap-6 sm:flex-row sm:items-end sm:justify-between"
-              style={{ animationDelay: "1.1s" }}
-            >
-              <p className="max-w-sm font-serif text-lg italic text-ivory/85 sm:text-xl">
-                There is a Word for you today.
-              </p>
-              <a
-                href="#todays-word"
-                className="group inline-flex items-center gap-2 font-sans text-xs font-semibold tracking-[0.16em] text-ivory"
-              >
-                RECEIVE TODAY&apos;S WORD
-                <span
-                  className="animate-arrow-bounce inline-block transition-transform group-hover:scale-125"
-                  style={{ animationDelay: "2.2s" }}
-                  aria-hidden="true"
+            <div className="animate-fade-up mt-10" style={{ animationDelay: "1.1s" }}>
+              <span className="rule-gold w-full" aria-hidden="true" />
+              <div className="mt-6 flex flex-col items-start gap-6 sm:flex-row sm:items-end sm:justify-between">
+                <p className="max-w-sm font-serif text-lg italic text-ivory/85 sm:text-xl">
+                  There is a Word for you today.
+                </p>
+                <a
+                  href="#todays-word"
+                  className="group inline-flex items-center gap-2 font-sans text-xs font-semibold tracking-[0.16em] text-ivory"
                 >
-                  ↓
-                </span>
-              </a>
+                  RECEIVE TODAY&apos;S WORD
+                  <span
+                    className="animate-arrow-bounce inline-block transition-transform group-hover:scale-125"
+                    style={{ animationDelay: "2.2s" }}
+                    aria-hidden="true"
+                  >
+                    ↓
+                  </span>
+                </a>
+              </div>
             </div>
           </div>
         </HeroParallax>

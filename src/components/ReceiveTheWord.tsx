@@ -14,7 +14,7 @@ interface ReceiveTheWordProps {
 export default function ReceiveTheWord({
   variant = "light",
   heading = "NEVER MISS YOUR WORD.",
-  subheading = "Start your morning with Scripture, reflection, and prayer.",
+  subheading = "We'll remind you when today's Word is ready.",
   source = "homepage",
   className = "",
 }: ReceiveTheWordProps) {
@@ -118,7 +118,7 @@ export default function ReceiveTheWord({
             </p>
           )}
           <p className={`mt-4 text-xs ${isDark ? "text-ivory/60" : "text-charcoal/60"}`}>
-            One email each morning. Unsubscribe anytime.
+            A gentle nudge each morning. Unsubscribe anytime.
           </p>
         </>
       )}
